@@ -1,0 +1,40 @@
+import os
+from email.message import EmailMessage
+import ssl
+import smtplib
+
+# Email configuration
+email_sender = 'angelovalenzuela27@gmail.com'  # Sender's email address
+email_password = ''  # Sender's email account password
+email_receivers = [
+                    'giovalenzuela20@gmail.com', 
+                   'angelovalenzuela27@gmail.com'
+                  ]  # List of recipient email addresses
+
+# Email content setup
+subject = 'Another test 4x'  # Subject of the email
+body = """Good day,
+
+Your rates for this week have not changed. We will retain the current rate.
+
+Regards,
+Angelo
+"""  # Body of the email message
+
+# Name of Sender
+sender_name = 'Angelo Valenzuela'
+
+# Create an EmailMessage object
+em = EmailMessage()  # Instantiate the EmailMessage object
+em['From'] = f'{sender_name} <{email_sender}>'  # Set the 'From' header to the sender's email address
+em['To'] = ', '.join(email_receivers)  # Join the list of recipients and set the 'To' header
+em['Subject'] = subject  # Set the 'Subject' header
+em.set_content(body)  # Set the content of the email to the body defined above
+
+# Secure connection with server
+context = ssl.create_default_context()  # Create a default SSL context for secure connection
+
+# Send email using SMTP_SSL
+with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:  # Connect to the Gmail SMTP server over SSL on port 465
+    smtp.login(email_sender, email_password)  # Login to the sender's email account
+    smtp.sendmail(email_sender, email_receivers, em.as_string())  # Send the email to the list of recipients
