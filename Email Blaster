@@ -12,10 +12,10 @@ email_receivers = [
                   ]  # List of recipient email addresses
 
 # Email content setup
-subject = 'Another test 4x'  # Subject of the email
+subject = 'Weekly Rate of AGKV Corp.'  # Subject of the email
 body = """Good day,
 
-Your rates for this week have not changed. We will retain the current rate.
+Kindly be advised, we will be increasing our rate to 2.5%. Kindly email back if you'd like to continue your loan for the week.
 
 Regards,
 Angelo
