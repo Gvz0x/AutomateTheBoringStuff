@@ -1,0 +1,86 @@
+import os
+import time
+import pandas as pd
+import smtplib
+from email.message import EmailMessage
+
+# Constants - update these with your actual details
+EMAIL_ADDRESS = 'Angelovalenzuela27@gmail.com'  # Your Gmail address
+EMAIL_PASSWORD = ''  # Your Gmail app password
+SENDER_NAME = 'Angelo Gabriel Valenzuela'  # Your name
+SUBJECT = 'Application for Analyst Position'
+DEGREE = "Bachelor's of Science"  # Your degree
+MAJOR = 'Interdisciplinary Business Studies'  # Your major
+UNIVERSITY = 'De La Salle University'  # Your university
+LINKEDIN_PROFILE = 'https://www.linkedin.com/in/angelovalenzuela/'  # Your LinkedIn profile
+PHONE_NUMBER = '09175475480'  # Your phone number
+EMAIL_SIGNATURE = 'Angelovalenzuela27@gmail.com'  # Your email signature
+CV_PATH = 'C:/Users/Angelo/Documents/Work (Important)/CV/Valenzuela, Angelo Gabriel CV.pdf'  # Path to your CV
+ATTACHMENT_FILENAME = 'Valenzuela_Angelo_Gabriel_CV.pdf'  # Desired filename for the attachment
+
+# Function to read the receivers from the Excel file
+def get_receivers(file_path):
+    df = pd.read_excel(file_path)
+    return df.to_dict(orient='records')
+
+# Function to create the email content
+def create_email_content(receiver):
+    content = f"""
+Dear {receiver['Name']},
+
+I am writing to express my interest in the {receiver['Company']}. With a strong background in data analysis, Python coding, and automated workflows, I am confident in my ability to contribute effectively to your team.
+
+I hold a {DEGREE} in {MAJOR} from {UNIVERSITY}. My proficiency in tools such as SQL, Tableau, and Excel, combined with my ability to translate complex data into actionable insights, makes me a strong candidate for this role.
+
+Attached to this email, you will find my CV, which provides detailed information about my educational background, professional experience, and technical skills. Additionally, you can view my LinkedIn profile at {LINKEDIN_PROFILE} for further insights into my career and endorsements from colleagues and clients.
+
+I am excited about the opportunity to bring my expertise to {receiver['Company']} and contribute to your continued success. Thank you for considering my application. I look forward to the possibility of discussing how my skills and experiences align with your team's needs.
+
+Best regards,
+Angelo Gabriel Valenzuela
+{PHONE_NUMBER}
+{EMAIL_SIGNATURE}
+"""
+    return content
+
+# Function to send the email
+def send_email(receiver, subject, body, attachment_path, attachment_filename):
+    msg = EmailMessage()
+    msg['Subject'] = subject
+    msg['From'] = f"{SENDER_NAME} <{EMAIL_ADDRESS}>"  # Custom sender name
+    msg['To'] = receiver['Email']
+    msg.set_content(body)
+
+    # Attach the CV with a custom filename
+    with open(attachment_path, 'rb') as f:
+        file_data = f.read()
+    msg.add_attachment(file_data, maintype='application', subtype='octet-stream', filename=attachment_filename)
+
+    try:
+        # Send the email
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+        print(f"Email sent to {receiver['Name']} at {receiver['Email']}")
+    except Exception as e:
+        print(f"Failed to send email to {receiver['Name']} at {receiver['Email']}: {e}")
+        return False
+    return True
+
+# Main function
+def main():
+    receivers = get_receivers('C:/Users/Angelo/Documents/Work (Important)/Email Receiver.xlsx')  # Path to your Excel file with receivers
+
+    for receiver in receivers:
+        body = create_email_content(receiver)
+        success = send_email(receiver, SUBJECT, body, CV_PATH, ATTACHMENT_FILENAME)
+        if not success:
+            time.sleep(60)  # Wait 1 minute before retrying in case of failure
+            success = send_email(receiver, SUBJECT, body, CV_PATH, ATTACHMENT_FILENAME)
+            if not success:
+                print(f"Failed to send email to {receiver['Name']} at {receiver['Email']} after retrying.")
+
+        time.sleep(30)  # Wait 30 seconds between emails to avoid rate limits
+
+if __name__ == "__main__":
+    main()
