@@ -1,0 +1,27 @@
+from pathlib import Path
+import calendar
+import os
+
+# Get the month names
+month_names = list(calendar.month_name[1:])  # January to December
+# List of specific day ranges
+days = ['Day 1-10', 'Day 11-20', 'Day 21-30']
+
+# Get the user's desktop directory
+desktop_path = Path(os.path.expanduser("~/Desktop"))
+
+# Define the base directory on the desktop
+base_dir = desktop_path / '2024'
+
+# Iterate over the months and days to create directories
+for i, month in enumerate(month_names):
+    for day in days:
+        # Create the directory path for the current month and day range
+        directory_path = base_dir / f'{i+1}.{month}' / day
+        # Make the directory, including any necessary parent directories
+        directory_path.mkdir(parents=True, exist_ok=True)
+        # Print the directory path for verification
+        print(f'Created directory: {directory_path}')
+
+# Print confirmation message
+print("Directories created successfully.")
